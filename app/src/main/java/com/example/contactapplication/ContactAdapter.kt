@@ -7,16 +7,18 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
-class ContactAdapter(private val listOfContacts: List<Contact>): RecyclerView.Adapter<ContactAdapter.ContactViewHolder>() {
+class ContactAdapter(private val listOfContacts: List<Contact>) :
+    RecyclerView.Adapter<ContactAdapter.ContactViewHolder>() {
 
-    class ContactViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
+    class ContactViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val contactIV: ImageView = itemView.findViewById(R.id.userIV)
         val contactName: TextView = itemView.findViewById(R.id.userNameTV)
         val contactPhoneNumber: TextView = itemView.findViewById(R.id.userPhoneNumberTV)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ContactViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.layout_contact, parent, false)
+        val view =
+            LayoutInflater.from(parent.context).inflate(R.layout.layout_contact, parent, false)
         return ContactViewHolder(view)
     }
 
@@ -28,6 +30,6 @@ class ContactAdapter(private val listOfContacts: List<Contact>): RecyclerView.Ad
         val currentContact = listOfContacts[position]
         holder.contactName.text = currentContact.name
         holder.contactPhoneNumber.text = currentContact.phoneNumber
-        holder.contactIV.setImageResource(currentContact.image)
+        holder.contactIV.setImageURI(currentContact.image)
     }
 }
