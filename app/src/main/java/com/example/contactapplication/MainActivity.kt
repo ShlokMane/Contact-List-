@@ -11,6 +11,8 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Toast
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -25,18 +27,28 @@ class MainActivity : AppCompatActivity() {
     private lateinit var contactNameET: EditText
     private lateinit var contactPhoneNumberET: EditText
     private lateinit var dialog: Dialog
-    val listOfContacts = mutableListOf<Contact>()
+    //val listOfContacts = mutableListOf<Contact>()
+
+    private lateinit var repo: Repo
+    private lateinit var viewModelFactory: ContactViewModelFactory
+    private lateinit var viewModel: ContactViewModel
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        repo = Repo()
+        viewModelFactory = ContactViewModelFactory(repo)
+        viewModel = ViewModelProvider(this, viewModelFactory).get(ContactViewModel::class.java)
+
         contactRV = findViewById(R.id.contactListRV)
         addContactFAB = findViewById(R.id.addContactFAB)
-
         contactRV.layoutManager = LinearLayoutManager(this)
-        contactAdapter = ContactAdapter(listOfContacts)
-        contactRV.adapter = contactAdapter
 
+        viewModel.listOfContactLiveData.observe(this) {
+
+            contactAdapter = ContactAdapter(it)
+            contactRV.adapter = contactAdapter
+        }
         addContactFAB.setOnClickListener {
             showDialog()
         }
@@ -80,14 +92,18 @@ class MainActivity : AppCompatActivity() {
                 } else if (previewImageIV.visibility == View.GONE) {
                     Toast.makeText(this, "Please add contact's image", Toast.LENGTH_SHORT).show()
                 } else {
-                    listOfContacts.add(
-                        Contact(
-                            data?.data!!,
+//                    listOfContacts.add(
+//                        Contact(
+//                            data?.data!!,
+//                            contactNameET.text.toString(),
+//                            contactPhoneNumberET.text.toString()
+//                        )
+//                    )
+                    viewModel.addContact(
+                        Contact(data?.data!!,
                             contactNameET.text.toString(),
-                            contactPhoneNumberET.text.toString()
-                        )
-                    )
-                    contactAdapter.notifyItemInserted(listOfContacts.size - 1)
+                            contactPhoneNumberET.text.toString()))
+
                     dialog.dismiss()
                 }
             }
